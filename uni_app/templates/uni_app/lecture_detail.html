@@ -1,0 +1,31 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{lecture.title}}</h4>
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+    <h4 class="modal-text">
+        <video id="myaudio" width="200" height="200" src="{{lecture.audio.url}}" controls>
+      not supported
+    </video>
+        <p>{{lecture.completed}}</p>
+    </h4>
+
+    <script>
+        var aid = document.getElementById("myaudio");
+        console.log("{{lecture.id}}");
+        var audUrl = "/lectures/{{lecture.id}}/complete/";
+        aid.onended = function() {
+            $.ajax({
+                url: audUrl,
+                method: "GET",
+                success: function(data) {
+                    window.location.href = "/" + data.reverseUrl;
+                    if (data.message) {
+                        alert(data.message);
+                    }
+                },
+            });
+        };
+        console.log("duration means ->", aid.duration);
+    </script>
+</div>

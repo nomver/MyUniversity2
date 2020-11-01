@@ -1,0 +1,83 @@
+{% extends 'base.html' %} {% block content %}
+<!--main section-->
+<section>
+    <div class="row">
+            <div class="col-10">
+                {% if user == subject.teacher %}
+                <h5 class="m-3">
+                    <a class="p-3" href="{% url 'uni_app:addLecture' pk=subject.pk %}">Add Lecture</a>
+                    {% if not subject.shortcourse %}
+                    {% if user.is_teacher %}
+                    <a class="p-3" href="{% url 'uni_app:add_assignment' pk=subject.pk %}">Add Assignment</a>
+                    {% endif %}
+                    {% endif %}
+                </h5>
+                <a href="{% url 'uni_app:delete_subject' pk=subject.pk %}"><span class="badge badge-danger">delete</span></a>
+                {% endif %}
+                <h4>Lecture of {{subject.title}}</h4>
+                <div id="lectureList" class="row">
+                    {% for lecture in completed_lect %} {% if lecture.audio %}
+                    <div class="card mt-4 ml-5 col-md-5 col-lg-3">
+                        <div class="card-body">
+                            <h6>
+                                <a href="{% url 'uni_app:lecture_detail' pk=lecture.pk %}">{{lecture.title}}</a>
+                            </h6>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a href="{% url 'uni_app:lecture_detail' pk=lecture.pk %}"class="btn play rounded-circle btn-success">
+                                <span class="fas fa-play"></span>
+                            </a>
+                        </div> 
+                    </div>
+                    <!---->
+                    {% endif %} {% endfor %}
+                    {% for lecture in uncomplete_lect %} {% if lecture.audio %}
+                    <div class="card bg-light {% if forloop.counter > 1 %}covered{% endif %} mt-4 ml-5 col-md-5 col-lg-3">
+                        
+                        {% if forloop.counter > 1 %}
+                        <div class="card-body bg-white">
+                            <h6>
+                                {% if user.is_student %}
+                                <a>{{lecture.title}}</a>
+                                {% else %}
+                                <a href="{% url 'uni_app:lecture_detail' pk=lecture.pk %}">{{lecture.title}}</a>
+                                {% endif %}
+                            </h6>
+                        </div>
+                        {% if user.is_student %}
+                        <div class="hiddenLayer">
+                            <span class="fas fa-2x fa-lock img-fluid float-right text-danger"></span>
+                        </div>
+                        {% else %}
+                        <div class="card-footer bg-white">
+                            <a href="{% url 'uni_app:lecture_detail' pk=lecture.pk %}"class="btn play rounded-circle btn-success">
+                                <span class="fas fa-play"></span>
+                            </a>
+                        </div> 
+                        {% endif %}
+                        {% else %}
+                        <div class="card-body bg-white">
+                            <h6>
+                                <a href="{% url 'uni_app:lecture_detail' pk=lecture.pk %}">{{lecture.title}}</a>
+                            </h6>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a href="{% url 'uni_app:lecture_detail' pk=lecture.pk %}"class="btn play rounded-circle btn-success">
+                                <span class="fas fa-play"></span>
+                            </a>
+                        </div> {% endif %}
+                    </div>
+                    <!---->
+                    {% endif %} {% endfor %}
+        
+                </div>
+            </div>
+            <div class="col-2">
+                {% for assignment in subject.assignments.all %}
+                <a class='nav-link' href="{% url 'uni_app:detail_assignment' pk=assignment.pk %}">{{assignment.created_date}}</a>
+                {% endfor %}
+            </div>
+            
+    </div>
+</section>
+{% endblock content %}

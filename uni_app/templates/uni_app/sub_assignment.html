@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+{% load bootstrap4 %}
+{% block content %}
+<!--main section-->
+<section>
+    <div class="row">
+        <div class="col-10 lead">
+            Assignment:
+            <p class="p-5 card">{{sub_assignment.assignment.assignment}}</p>
+            <p>Teacher Name : {{sub_assignment.assignment.teacher }}</p>
+            <p>Created At : {{sub_assignment.assignment.created_date}}</p>
+            <p>Due On: {{sub_assignment.assignment.due_on}}</p>
+            <hr>
+            
+            <a href="{{sub_assignment.submitted_docs.url}}" class="btn btn-primary">
+                <span class="fa fa-download"></span>
+                Uploaded File
+            </a>
+            <p>By : {{sub_assignment.submitted_by}}</p>
+            <p>Submitted At : {{sub_assignment.submitted_at}}</p>
+        </div>
+        
+    </div>
+</section>
+{% endblock content %}

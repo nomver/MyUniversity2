@@ -1,0 +1,70 @@
+{% extends 'base.html' %} {% load bootstrap4 %} {% block content %}
+<div class="row">
+    <div class="col-2 mt-5">
+        <h6>Your Previous Messages to This{% if student.is_teacher %} teacher{% else %}Student{% endif %}</h6>
+        <hr>
+        {% for msg in student.student_msg.all %}
+            {% if user == msg.from_teacher %}
+                <p class="font-weight-bold" style="border-bottom:2px solid gray;border-radius: 10%;width:100%;">{{msg.message}} <br/>| at {{msg.sent_date}}</p>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="col-10">
+        <div class="container row justify-content-center">
+            <div class="">
+                <div class="rounded-circle text-center" style="background-color:rgb(234, 216, 143);width:200px;height:200px;">
+                    {% if student.user_profile.profile_image %}
+                    <img width="100%" height="100%" src="{{student.user_profile.profile_image.url}}" alt="Profile Image" class="rounded-circle">
+                    {% else %}
+                        No image
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="row text-center mr-2">
+            <div class="font-weight-bold col-12">
+                <p class="mt-5">
+                    {{student.username}}
+                </p>
+                <p>
+                    {% if student.department %}
+                    {{student.department}}
+                    {% else %}
+                    Program : {{student.user_profile.program}}
+                    {% endif %}
+                </p>
+                {% if student.is_student %}
+                <p>
+                    Roll Number : {{student.user_profile.Rollnumber}}
+                </p>
+                {% endif %}
+                <form method='POST' class="mt-5" action="{% url 'accounts:msgToStudent' pk=student.pk %}">
+                    {% csrf_token %}
+                    {% bootstrap_form message_form %}
+                    <input class="btn btn-success" type="submit" value="Message To User">
+                </form>
+                
+                {% if user.is_teacher and user.is_hod %}
+                {% if student.you_are == 'Teacher' and not student.is_teacher %}
+                <a class="mt-5 btn btn-sm btn-success" href="{% url 'accounts:approve_teacher' pk=student.pk %}">Approve</a>
+                {% endif %}
+                <a class="mt-5 btn btn-sm btn-danger" href="{% url 'accounts:delete_user' pk=student.pk%}">Delete This {% if student.is_teacher %}Teacher{% else %}Student{% endif %}</a>
+                {% else %}
+                {% if user.is_teacher %}
+                    {% if student.is_student %}
+                    <a class="mt-5 btn btn-danger" href="{% url 'accounts:delete_user' pk=student.pk%}">Delete This Student</a>
+                    {% endif %}
+                {% endif %}
+                {% if user.is_hod %}
+                    {% if not student.is_teacher %}
+                    <a class="mt-5 btn btn-sm btn-success" href="{% url 'accounts:approve_teacher' pk=student.pk %}">Approve to Teacher</a>
+                    {% endif %}
+                    <a class="mt-5 btn btn-sm btn-danger" href="{% url 'accounts:delete_user' pk=student.pk%}">Delete This {% if student.is_teacher %}Teacher{% else %}Student{% endif %}</a>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %} {% block content %}
+<!--main section-->
+<section>
+    <div class="row">
+        <div class="col-2">
+            {% if user.is_hod %}
+            <h6>Requested Teachers</h6>
+            {% for teacher in req_teachers%}
+            <p> <a href="{% url 'accounts:UserView' pk=teacher.pk %}">{{teacher.username}}</a> </p>
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h4>All Programs in {{user.department}}</h4>
+            <div id="programList" class="row">
+                {% if user.you_are == 'Teacher' %}
+                    {% if not user.is_teacher%}
+                        <h5 class="alert alert-warning">
+                            Please Contact to Your HOD or <br/>
+                             Wait for your HOD Approval.
+                        </h5>
+                    {% endif %}
+                {% endif %}
+                {% for program in programs %}
+                    <div class="card mt-4 ml-5 col-md-5 col-lg-3">
+                        <div class="card-body">
+                            <h6>
+                                <a href="{% url 'uni_app:programs' pk=program.pk %}">{{program.name}} {{program.semester}}</a>
+                            </h6>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if user.is_hod %}
+                <div class="card text-center col-md-5 col-lg-3" style="border:0;">
+                    <div class="card-body">
+                        <h6>
+                            <a href="{% url 'uni_app:addProgram' %}"><span class="fas fa-2x fa-plus"></span></a>
+                        </h6>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="modal fade" id="mymodal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-2 mt-5 font-weight-bold">
+            {% if user.is_hod %}
+            <button btn-url="{% url 'accounts:msgToAll' %}" id="sendMessage" class="btn btn-secondary float-left mb-5">Send Message To Department</button>
+            <script>
+                $('#sendMessage').on('click',function(e){
+                    e.preventDefault();
+                    $.ajax({
+                        url:$(this).attr('btn-url'),
+                        method:'GET',
+                        dataType:'json',
+                        beforeSend:function(){$('#mymodal').modal('show');},
+                        success:function(rdata){
+                            $('#mymodal .modal-content').html(rdata.d);
+                            console.log(rdata.d)
+                        }
+                    });
+                })
+            </script>
+            <p class="">All Teachers</p>
+            {% for teacher in teachers %}
+            {% if teacher.username == user.username %}
+            {% else%}
+            <p> <a href="{% url 'accounts:UserView' pk=teacher.pk %}">{{teacher.username}}</a> </p>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

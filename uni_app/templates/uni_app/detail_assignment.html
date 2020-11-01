@@ -1,0 +1,40 @@
+{% extends 'base.html' %} 
+{% load bootstrap4 %}
+{% block content %}
+<!--main section-->
+<section>
+    <div class="row">
+        <div class="col-10">
+            {% if user == assignment.teacher %}
+                    <a href="{% url 'uni_app:delete_assignment' pk=assignment.pk %}"><span class="badge badge-danger">
+                    delete</span></a>
+            {% endif %}
+            <h4>Assignment of : {{assignment.subject }} for Students of {{assignment.subject.program}}</h4>
+            <p class="p-5 card">{{assignment.assignment}}</p>
+            <p class="lead">Due on: {{assignment.due_on}}</p>
+            {% if not user.is_teacher and not user.is_hod %}
+            {% if form != '' %}
+            <form method="POST" action="{% url 'uni_app:detail_assignment' pk=assignment.pk %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <input type="submit" value="Upload" class="btn btn-primary">
+            </form>
+            {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-2 border-left font-weight-bold">
+            <h2>Submitted</h2>
+            {% for assignment in submitted_assignments %}
+                <div class="card m-4 bg-warning">
+                    <p class="nav-link">{{assignment.submitted_by}}</p>
+                    {% if user.is_student %}
+                    {% else %}
+                    <a href="{% url 'uni_app:sub_assignment' pk=assignment.pk %}" class="nav-link">{{assignment.submitted_by}}</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        
+    </div>
+</section>
+{% endblock content %}

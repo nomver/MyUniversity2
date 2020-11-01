@@ -1,0 +1,96 @@
+{% extends 'base.html'%} {% load static %}{% block content %}
+<div class="container">
+<h5 class="">{{program}} - Subjects</h5>
+{% if user.is_teacher %}
+    <a class="float-float-left" href="{% url 'uni_app:addSubject' %}">
+    <span class="fa fa-1x fa-plus">Add Subject</span>
+    </a>
+{% endif %}
+<div class="row">
+    {% for subject in subjects %}
+    
+    {% if not subject.shortcourse %}
+    <div class="card mt-5 col-md-6 col-lg-4 col-sm-12">
+        <div class="card-image" style="max-height: 200px; overflow: hidden;">
+            <img src="{{subject.image.url}}" class="img-fluid" alt="SUBJECT IMAGE" />
+        </div>
+        <hr />
+        <div class="card-body">
+            <h3 class="card-title">
+                <a href="{% url 'uni_app:lectures' pk=subject.pk %}">{{subject.title}}</a>
+                
+                {% if subject.teacher != user %}
+                <p class="lead">Teacher: {{subject.teacher}}</p>
+                {% endif %}
+            </h3>
+            <p class="card-footer card-text">
+                For Program : {{subject.program}} <br/>
+                <b>last updation</b> : {{subject.lectures.last.upload_on|date}}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+    {% empty %}
+    {% if user.is_hod %}
+    {% if user.is_teacher %}
+    {% else %}
+        <script>
+            $('.display-4').html('');
+        </script>
+        {% endif %}
+    {% else %}
+    <h6>Please Complete Your Profile By Clicking on <a href="{% url 'accounts:update_profile' %}">Your Profile is here</a> to see your subjects. Or Contact Your Department!</h6>
+    {% endif %}
+    {% endfor %}
+    
+</div>
+<hr/>
+<div class="row m-5">
+    <div class="col-12">
+        <h1>Short Courses</h1>
+        {% if user.is_teacher %}
+            <a class="float-right" href="{% url 'uni_app:addShortCourse' %}">
+            <span class="fa fa-1x fa-plus">Add ShortCourse</span>
+            </a>
+        {% endif %}
+        <div class="row">
+            {% for subject in subjects %}
+            {% if subject.shortcourse %}
+            <div class="card mt-5 col-md-6 col-lg-4 col-sm-12">
+                <div class="card-image" style="max-height: 200px; overflow: hidden;">
+                    <img src="{{subject.image.url}}" class="img-fluid" alt="SUBJECT IMAGE" />
+                </div>
+                <hr />
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <a href="{% url 'uni_app:lectures' pk=subject.pk %}">{{subject.title}}</a>
+                        <p class="lead">Teacher: {{subject.teacher}}</p>
+                    </h3>
+                    <p class="card-footer card-text">
+                        For Program : {{subject.program}} <br/>
+                        <b>last updation</b> : {{subject.lectures.last.upload_on|date}}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% empty %}
+                {% if user.is_hod %}
+                {% if user.is_teacher %}
+                {% else %}
+                <h5><a href="{% url 'uni_app:hod_dashboard' %}">
+                    0 Subjects
+                    Goto Your Dashboard </a></h5>
+                <script>
+                    $('.display-4').html('');
+                </script>
+                {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+</div>
+</div>
+
+{% endblock content %}

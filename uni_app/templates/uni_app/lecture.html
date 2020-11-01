@@ -1,0 +1,62 @@
+{% extends 'base.html'%} {% load static %}{% block content %}
+<div class="row">
+    <div class="col-6">
+        <h4>{{lecture.title}}</h4> 
+        {% if lecture.teacher == user %}
+        <a href="{% url 'uni_app:delete_lecture' pk=lecture.pk %}"><span class="badge badge-danger">delete</span></a>
+        {% endif %}
+        <p>Uploaded by : {{lecture.teacher|title}}</p>
+        <p class="lead">{{lecture.upload_on}}</p>
+        {% if user.is_teacher %}
+        <h6><span class="badge badge-success">{% if lecture.students.count > 1 %}{{lecture.students.count}}{% else %}0{% endif %}</span> students watched this lecture. <span class="fa fa-eye"></span></h6>
+        {% if lecture.teacher == user %}
+        <ul>
+            {% for w_std in lecture.students.all %}
+                {% if w_std.is_student %}
+                    <li class="p-1"> <a href="{% url 'accounts:UserView' pk=w_std.pk %}">{{w_std.username}} </a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endif %}
+    </div>
+    <div class="col-6 float-right">
+        <h4 class="">
+            <video id="myaudio" width="300" height="200" src="{{lecture.audio.url}}" controls>
+            not supported
+            </video>
+            <h3>Related Files</h3>
+            {% if lecture.related_files %}
+            <a class="font-weight-bold btn btn-outline-primary" href="{{lecture.related_files.url}}"><span class="fa fa-download"></span> Download</a>
+            {% else %}
+            No Related File
+            {% endif %}
+        </h4>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-6">
+        
+    </div>
+    <script>
+        var aid = document.getElementById("myaudio");
+        console.log("{{lecture.id}}");
+        var audUrl = "/lectures/{{lecture.id}}/complete/";
+        
+        aid.onended = function() {
+            $.ajax({
+                url: audUrl,
+                method: "GET",
+                success: function(data) {
+                    window.location.href = "/" + data.reverseUrl;
+                    if (data.message) {
+                        alert(data.message);
+                    }
+                },
+            });
+        };
+        console.log("duration means ->", aid.duration);
+    </script>
+</div>
+{% endblock content %}

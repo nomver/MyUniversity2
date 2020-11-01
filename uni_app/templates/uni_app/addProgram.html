@@ -1,0 +1,9 @@
+{% extends 'base.html' %} {% load bootstrap4 %} {% block content %}
+<div class="container row justify-content-center p-5" style="background-color:whitesmoke;opacity: 1;border-radius: 3%;">
+    <h4 class="mr-5">Add {{msg}}</h4>
+    <form method="POST" class="col-md-8 font-weight-bold" style="font-size: 15px;" >
+        {% csrf_token %} {% bootstrap_form form %}
+        <input type='submit' class="btn btn-success font-weight-bold" value="Add Program">
+    </form>
+</div>
+{% endblock content %}

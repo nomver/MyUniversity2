@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>NordSoft</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="" name="keywords">
+  <meta content="" name="description">
+
+  <!-- Favicons -->
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <link href="{% static 'img/favicon.png' %}" rel="icon">
+  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Montserrat:300,400,500,700" rel="stylesheet">
+
+  <!-- Bootstrap CSS File -->
+  <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- Libraries CSS Files -->
+  <link rel="stylesheet" href="{% static 'font/css/all.min.css' %}">
+  <link href="{% static 'lib/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+  <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+  <link href="{% static 'lib/ionicons/css/ionicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+  <link href="{% static 'lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+
+  <!-- Main Stylesheet File -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <style>
+    ul {
+            list-style-type: '\2713';
+        }
+        #id_message{
+            margin:0 auto;
+            height:50px;
+            width:200px;
+        }
+  </style>
+  <!-- =======================================================
+  
+  ======================================================= -->
+</head>
+
+<body>
+
+  <!--==========================
+  Header
+  ============================-->
+  <header id="header" class="fixed-top">
+    <div class="container">
+
+      <div class="logo float-left">
+       
+        <a href="#intro" class="scrollto"><img src="{% static 'img/logo.png' %}" alt="" class="img-fluid"></a>
+      </div>
+
+      <nav class="main-nav float-right d-none d-lg-block">
+        
+        <ul>
+            <li class="drop-down"><a href=""><span class="badge text-warning">{{user.student_msg.count}}</span><span class="fa fa-bell text-warning"></span></a>
+                <ul>
+                  {% for msg in user.student_msg.all %}
+                  <li><a btn-url="{% url 'accounts:msg_detail' pk=msg.pk %}" href='' class='msgClick'>{{msg|truncatewords:5}} | {% if user.is_student %}{{msg.from_teacher}}{% else %}hod of {{msg.from_teacher.department}}{% endif %}</a></li>
+                  {% empty %}
+                  <li><a href="#">No messages</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% block navbar %}
+            {% endblock navbar %}
+
+            {% if user.is_authenticated %}
+            <li>
+                <a href="{% url 'uni_app:subjects' %}">Subjects</a>
+            </li>
+            {% if user.is_teacher or user.is_hod %}
+            <li>
+                <a href="{% url 'uni_app:hod_dashboard' %}">Dashboard</a>
+            </li>
+            {% endif %}
+            {% if user.is_teacher %}
+        
+            <li>
+                <a href="{% url 'uni_app:addSubject' %}">Add Subject</a>
+            </li>
+            
+            {% endif %}
+            {% if user.user_profile.profile_image %}
+            <li style="
+                overflow: hidden;
+                width: 45px;
+                height: 40px;
+                border-radius: 50%;
+            ">
+            <li class="drop-down" style="
+            overflow: hidden;
+            width: 45px;
+            height: 40px;
+            border-radius: 50%;">
+                <a  href="{% url 'accounts:update_profile' %}">
+                    <img src="{{request.user.user_profile.profile_image.url}}" class="img-fluid" style="transform: scale(3);" />    
+                </a>
+                <ul>
+                    <li><a href="/">{{user.username}}</a></li>
+                    <li><a href="{% url 'accounts:update_profile' %}">Update Profile</a></li>
+                </ul>
+            </li>
+                
+            </li>
+            {% else %}
+            <li class="drop-down">
+                <a alt="Edit profile" href="">@{{user.username}}</a>
+                <ul>
+                    <li><a href="{% url 'accounts:update_profile' %}">Update Profile</a></li>
+                </ul>
+            </li>
+            {% endif %}
+            <li><a href="{% url 'accounts:logout' %}">logout</a></li>
+
+        {% else %}
+            
+            <li>
+                <a  href="{% url 'accounts:signup' %}">Signup</a>
+            </li>
+            <li>
+                <a href="{% url 'accounts:login' %}">Login</a>
+            </li>
+        {% endif %}
+        </ul>
+    
+    </nav><!-- .main-nav -->
+      
+    </div>
+  </header><!-- #header -->
+  {% block content1 %}
+  {% endblock content1 %}
+  
+  <div class="modal fade" id="modal1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+        </div>
+    </div>
+</div>
+<script>
+  $('.msgClick').on('click',function(e){
+      e.preventDefault();
+      $.ajax({
+          url:$(this).attr('btn-url'),
+          method:'GET',
+          dataType:'json',
+          beforeSend:function(){$('#modal1').modal('show');},
+          success:function(rdata){
+              $('#modal1 .modal-content').html(rdata.msg1);
+              console.log(rdata.d)
+          }
+      });
+  })
+</script>
+  <div  style="margin-top:200px;">
+    <div class="container">
+        {% block content %}
+    {% endblock content %}
+    </div>
+    
+  </div>
+
+  <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+  <!-- Uncomment below i you want to use a preloader -->
+  <!-- <div id="preloader"></div> -->
+
+  <!-- JavaScri{% 'pt Libraries -->
+  <script src="{% static 'lib/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'lib/jquery/jquery-migrate.min.js' %}"></script>
+  <script src="{% static 'lib/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+  <script src="{% static 'lib/mobile-nav/mobile-nav.js' %}"></script>
+  <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+  <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+  <script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
+  <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'lib/isotope/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'lib/lightbox/js/lightbox.min.js' %}"></script>
+  <!-- Contact Form JavaScript File -->
+  <script src="{% static 'contactform/contactform.js' %}"></script>
+
+  <!-- Template Main Javascript File -->
+  <script src="{% static 'js/main.js' %}"></script>
+
+</body>
+</html>

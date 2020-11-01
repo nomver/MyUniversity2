@@ -1,0 +1,4 @@
+{% load bootstrap4 %}
+<h5>Message from {{msg.from_teacher}}</h5>
+<p>{{msg}}</p>
+<a href="{% url 'accounts:delete_msg' pk=msg.pk %}" class="col-md-2 btn btn-sm btn-inline btn-danger">delete</a>
